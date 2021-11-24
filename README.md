@@ -4,9 +4,9 @@ A sample migration process related scripts
 
 You will find a various of SQL scripts regarding to create a sample database, define the defaul values like PK and FK notations. Finally the most common `view`, `function`, `procedure` samples.
 
-The source code includes a `/data-correction` folder which has test-case sctipts for each table. The scripts has been inspired by [pgTAB project](https://pgtap.org/). The `pgTAB` project provides TDD (test driven development) approch to the PostgreSQL.
+The source code includes a `/data-correction` folder which has test-case sctipts for each table. The scripts idea has been inspired by [pgTAB project](https://pgtap.org/). The `pgTAB` project provides TDD (test driven development) approch to the PostgreSQL. You may find prepared the unit-test cases for the PostgreSQL databases.
 
-The `/testing-helpers` folder (within `/data-correction`) will include a test-case template to make easy adapation to provide test case for any other table.
+The `/testing-helpers` folder (within `/data-correction`) will include a test-case template to make easy adapation to provide test case for any other table. Also the required functions which will be used by test-cases will be placed into the folder.
 
 #### Database info
 - Target Server: PostgreSQL
