@@ -13,12 +13,18 @@ The `/testing-helpers` folder (within `/data-correction`) will include a test-ca
 - Server Version: 10
 
 #### Project structure
-- /data-correction: Includes test cases for each tablet to be run during migration process. 
-    - /testing-helpers: Required testing-helper functions, etc. 
-- /functions: Includes all functiones within the database.
-- /procedures: Includes all procedures within the database.
-- /table: Includes all tables within the database.
-- /view: Includes all viewss within the database.
+- `/data-correction`: Includes test cases for each tablet to be run during migration process. 
+    -`/testing-helpers`: Required testing-helper functions, etc.
+- `/foreign-keys`: Includes all FKs within the database.
+- `/functions`: Includes all functiones within the database.
+- `/indexes`: Includes all indexes within the database.
+- `/install`-scripts: Includes all scripts related to the RESTORE/migration process.
+- `/media`: Includes EP diagram etc.
+- `/primary-keys`: Includes all PKs within the database.
+- `/sequence`: Includes all sequence within the database.
+- `/tables`: Includes all tables within the database.
+- `/triggers`: Includes all triggers within the database.
+- `/views`: Includes all viewss within the database.
 
 ---
 
