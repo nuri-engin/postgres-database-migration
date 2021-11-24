@@ -8,6 +8,15 @@ The source code includes a `/data-correction` folder which has test-case sctipts
 
 The `/testing-helpers` folder (within `/data-correction`) will include a test-case template to make easy adapation to provide test case for any other table. Also the required functions which will be used by test-cases will be placed into the folder.
 
+The `/install-scripts` folder is one the key resource within the structure. 
+
+The install scripts aims to provide the seperation of concern for a better RESTORE approach. Here we divide script context into various main-topic (like views, functions, etc.). 
+
+Thus, Database Administrator or any newbie to database structure person would adapt quickly.
+Meanwhile we will have more robust generation process during any database creation or migration process.
+
+The folder aim to be used only with `data-only` dump process!
+
 #### Database info
 - Target Server: PostgreSQL
 - Server Version: 10
@@ -18,7 +27,7 @@ The `/testing-helpers` folder (within `/data-correction`) will include a test-ca
 - `/foreign-keys`: Includes all FKs within the database.
 - `/functions`: Includes all functiones within the database.
 - `/indexes`: Includes all indexes within the database.
-- `/install`-scripts: Includes all scripts related to the RESTORE/migration process.
+- `/install-scripts`-scripts: Includes all scripts related to the RESTORE/migration process.
 - `/media`: Includes EP diagram etc.
 - `/primary-keys`: Includes all PKs within the database.
 - `/sequence`: Includes all sequence within the database.
