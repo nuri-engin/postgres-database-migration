@@ -29,7 +29,6 @@ CREATE FUNCTION public.film_in_stock(p_film_id integer, p_store_id integer, OUT 
      AND inventory_in_stock(inventory_id);
 $_$;
 
-
 ALTER FUNCTION public.film_in_stock(p_film_id integer, p_store_id integer, OUT p_film_count integer) OWNER TO postgres;
 
 -- Name: film_not_in_stock(integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
@@ -42,7 +41,6 @@ CREATE FUNCTION public.film_not_in_stock(p_film_id integer, p_store_id integer, 
     AND store_id = $2
     AND NOT inventory_in_stock(inventory_id);
 $_$;
-
 
 ALTER FUNCTION public.film_not_in_stock(p_film_id integer, p_store_id integer, OUT p_film_count integer) OWNER TO postgres;
 
@@ -85,7 +83,6 @@ BEGIN
 END
 $$;
 
-
 ALTER FUNCTION public.get_customer_balance(p_customer_id integer, p_effective_date timestamp without time zone) OWNER TO postgres;
 
 -- Name: inventory_held_by_customer(integer); Type: FUNCTION; Schema: public; Owner: postgres
@@ -103,7 +100,6 @@ BEGIN
 
   RETURN v_customer_id;
 END $$;
-
 
 ALTER FUNCTION public.inventory_held_by_customer(p_inventory_id integer) OWNER TO postgres;
 
@@ -138,7 +134,6 @@ BEGIN
     END IF;
 END $$;
 
-
 ALTER FUNCTION public.inventory_in_stock(p_inventory_id integer) OWNER TO postgres;
 
 -- Name: last_day(timestamp without time zone); Type: FUNCTION; Schema: public; Owner: postgres
@@ -153,7 +148,6 @@ CREATE FUNCTION public.last_day(timestamp without time zone) RETURNS date
     END
 $_$;
 
-
 ALTER FUNCTION public.last_day(timestamp without time zone) OWNER TO postgres;
 
 -- Name: last_updated(); Type: FUNCTION; Schema: public; Owner: postgres
@@ -165,5 +159,63 @@ BEGIN
     RETURN NEW;
 END $$;
 
-
 ALTER FUNCTION public.last_updated() OWNER TO postgres;
+
+-- Name: rewards_report(integer, numeric); Type: FUNCTION; Schema: public; Owner: postgres
+CREATE FUNCTION public.rewards_report(min_monthly_purchases integer, min_dollar_amount_purchased numeric) RETURNS SETOF public.customer
+    LANGUAGE plpgsql SECURITY DEFINER
+    AS $_$
+DECLARE
+    last_month_start DATE;
+    last_month_end DATE;
+rr RECORD;
+tmpSQL TEXT;
+BEGIN
+    /* Some sanity checks... */
+    IF min_monthly_purchases = 0 THEN
+        RAISE EXCEPTION 'Minimum monthly purchases parameter must be > 0';
+    END IF;
+    IF min_dollar_amount_purchased = 0.00 THEN
+        RAISE EXCEPTION 'Minimum monthly dollar amount purchased parameter must be > $0.00';
+    END IF;
+
+    last_month_start := CURRENT_DATE - '3 month'::interval;
+    last_month_start := to_date((extract(YEAR FROM last_month_start) || '-' || extract(MONTH FROM last_month_start) || '-01'),'YYYY-MM-DD');
+    last_month_end := LAST_DAY(last_month_start);
+
+    /*
+    Create a temporary storage area for Customer IDs.
+    */
+    CREATE TEMPORARY TABLE tmpCustomer (customer_id INTEGER NOT NULL PRIMARY KEY);
+
+    /*
+    Find all customers meeting the monthly purchase requirements
+    */
+
+    tmpSQL := 'INSERT INTO tmpCustomer (customer_id)
+        SELECT p.customer_id
+        FROM payment AS p
+        WHERE DATE(p.payment_date) BETWEEN '||quote_literal(last_month_start) ||' AND '|| quote_literal(last_month_end) || '
+        GROUP BY customer_id
+        HAVING SUM(p.amount) > '|| min_dollar_amount_purchased || '
+        AND COUNT(customer_id) > ' ||min_monthly_purchases ;
+
+    EXECUTE tmpSQL;
+
+    /*
+    Output ALL customer information of matching rewardees.
+    Customize output as needed.
+    */
+    FOR rr IN EXECUTE 'SELECT c.* FROM tmpCustomer AS t INNER JOIN customer AS c ON t.customer_id = c.customer_id' LOOP
+        RETURN NEXT rr;
+    END LOOP;
+
+    /* Clean up */
+    tmpSQL := 'DROP TABLE tmpCustomer';
+    EXECUTE tmpSQL;
+
+RETURN;
+END
+$_$;
+
+ALTER FUNCTION public.rewards_report(min_monthly_purchases integer, min_dollar_amount_purchased numeric) OWNER TO postgres;
