@@ -1,6 +1,6 @@
 # postgres-database-migration
 
-A migration process related scripts
+A sample migration process related scripts
 
 You will find a various of SQL scripts regarding to create a sample database, define the defaul values like PK and FK notations. Finally the most common `view`, `function`, `procedure` samples.
 
